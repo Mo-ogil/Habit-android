@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.habit_2"
+    namespace = "com.example.habit"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.habit_2"
+        applicationId = "com.example.habit"
         minSdk = 27
         targetSdk = 36
         versionCode = 1

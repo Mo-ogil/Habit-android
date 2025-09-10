@@ -1,4 +1,4 @@
-package com.example.habit_2
+package com.example.habit
 
 import org.junit.Test
 

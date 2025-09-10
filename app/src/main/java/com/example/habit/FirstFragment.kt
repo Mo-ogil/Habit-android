@@ -1,4 +1,4 @@
-package com.example.habit_2
+package com.example.habit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text

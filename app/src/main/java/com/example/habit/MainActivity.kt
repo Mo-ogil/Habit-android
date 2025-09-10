@@ -1,4 +1,4 @@
-package com.example.habit_2
+package com.example.habit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
