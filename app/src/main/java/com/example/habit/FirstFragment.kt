@@ -1,21 +1,17 @@
 package com.example.habit
 
-import android.graphics.pdf.content.PdfPageGotoLinkContent
-import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,19 +20,15 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -55,34 +46,54 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.navigation.ActivityNavigator
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.ui.geometry.Offset
 import androidx.navigation.compose.rememberNavController
-import com.google.androidgamesdk.gametextinput.Settings
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FirstFragment() {
-    SingleChoiceSegmentedButton()
-    HorizontalLineExample()
-    InputChipExample(
-        text = "Моя новая привычка",
-        onDismiss = {
-            var isVisible = false // Скрываем чипс
-            // Дополнительные действия при удалении
-            println("Привычка удалена")
+    var scale by remember { mutableFloatStateOf(1.2f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+        scale = (scale * zoomChange).coerceIn(1f, 3f)
+        offset = Offset(
+            x = offset.x + scale * panChange.x,
+            y = offset.y + scale * panChange.y,
+        )
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            TransformableFloatingActionButton(scale, offset)
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        bottomBar = {
+            TransformableNavigationBar(scale, offset)
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .transformable(state = transformableState)
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            TransformableSegmentedButton(scale, offset)
+            TransformableHorizontalLine(scale, offset)
+            TransformableInputChip(
+                text = "Моя новая привычка",
+                onDismiss = {},
+                scale = scale,
+                offset = offset
+            )
         }
-    )
-    AnimatedFloatingActionButton()
-    SimpleNavigationBar()
+    }
 }
 
 @Preview(showSystemUi = true)
@@ -91,119 +102,75 @@ fun FirstFragmentPreview() {
     FirstFragment()
 }
 
-
-
-
 @Composable
-fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier) {
+fun TransformableSegmentedButton(
+    scale: Float,
+    offset: Offset,
+    modifier: Modifier = Modifier
+) {
     var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("Day", "Month", "Week")
 
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center // Базовое выравнивание
-
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier
+            .offset(
+                x = calculateXOffset(offset.x, scale, 0.4f),
+                y = calculateYOffset(offset.y, scale, 0.2f)
+            )
     ) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .align(Alignment.TopStart) // Начальная позиция
-                .offset(
-                    x = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenWidthDp * 0.4f).toDp()
-                    },
-                    y = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenHeightDp * 0.2f).toDp()
-                    }
-                )
-        ) {
-            options.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = options.size
-                    ),
-                    onClick = { selectedIndex = index },
-                    selected = index == selectedIndex,
-                    label = { Text(label) }
-                )
-            }
+        options.forEachIndexed { index, label ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = options.size
+                ),
+                onClick = { selectedIndex = index },
+                selected = index == selectedIndex,
+                label = { Text(label) }
+            )
         }
     }
 }
 
 @Composable
-fun HorizontalLineExample() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Текст вверху
+fun TransformableHorizontalLine(scale: Float, offset: Offset) {
+    Column {
         Text(
             text = "Всего: 1",
-            style = MaterialTheme.typography.bodySmall, // ← Мелкий текст,
+            style = MaterialTheme.typography.bodySmall,
             color = Color.White,
             modifier = Modifier
-                .align(Alignment.TopStart)
                 .offset(
-                    x = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenWidthDp * 0.1f).toDp()
-                    },
-                    y = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenHeightDp * 0.4f).toDp()
-                    }
+                    x = calculateXOffset(offset.x, scale, 0.1f),
+                    y = calculateYOffset(offset.y, scale, 0.4f)
                 )
         )
 
-        // Линия в конкретной позиции
         Divider(
             color = Color.Gray,
             thickness = 2.dp,
             modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(y = with(LocalDensity.current) {
-                    (LocalConfiguration.current.screenHeightDp * 0.45f).toDp()
-                })
+                .offset(
+                    x = with(LocalDensity.current) { offset.x.toDp() },
+                    y = calculateYOffset(offset.y, scale, 0.45f)
+                )
                 .fillMaxWidth()
         )
     }
 }
 
-
 @Composable
-fun Habit() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Текст вверху
-        Text(
-            text = "Моя новая привычка",
-            style = MaterialTheme.typography.bodySmall, // ← Мелкий текст,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(
-                    x = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenWidthDp * 0.1f).toDp()
-                    },
-                    y = with(LocalDensity.current) {
-                        (LocalConfiguration.current.screenHeightDp * 0.4f).toDp()
-                    }
-                )
-        )
-
-
-    }
-}
-
-
-@Composable
-fun InputChipExample(
+fun TransformableInputChip(
     text: String,
     onDismiss: () -> Unit,
+    scale: Float,
+    offset: Offset
 ) {
     var enabled by remember { mutableStateOf(true) }
     if (!enabled) return
 
     InputChip(
-        onClick = {
-            onDismiss()
-            enabled = !enabled
-        },
+        onClick = {},
         label = { Text(text) },
         selected = enabled,
         trailingIcon = {
@@ -216,100 +183,90 @@ fun InputChipExample(
             .height(50.dp)
             .width(325.dp)
             .offset(
-                x = with(LocalDensity.current) {
-                    (LocalConfiguration.current.screenWidthDp * 0.225f).toDp()
-                },
-                y = with(LocalDensity.current) {
-                    (LocalConfiguration.current.screenHeightDp * 0.57f).toDp()
-                }
+                x = calculateXOffset(offset.x, scale, 0.225f),
+                y = calculateYOffset(offset.y, scale, 0.57f)
             ),
         shape = RoundedCornerShape(50)
     )
 }
 
 @Composable
-fun AnimatedFloatingActionButton() {
+fun TransformableFloatingActionButton(scale: Float, offset: Offset) {
     var isExpanded by remember { mutableStateOf(false) }
 
     LargeFloatingActionButton(
         onClick = {
-            isExpanded = !isExpanded // Меняем состояние при клике
+            isExpanded = !isExpanded
         },
         shape = CircleShape,
         modifier = Modifier
-            .height(70.dp)
-            .width(70.dp)
+            .size(70.dp)
             .offset(
-                x = with(LocalDensity.current) {
-                    (LocalConfiguration.current.screenWidthDp * 2.1f).toDp()
-                },
-                y = with(LocalDensity.current) {
-                    (LocalConfiguration.current.screenHeightDp * 2.1f).toDp()
-                }
+                x = with(LocalDensity.current) { offset.x.toDp() },
+                y = with(LocalDensity.current) { offset.y.toDp() }
             )
     ) {
-        // Меняем иконку в зависимости от состояния
         if (isExpanded) {
             Icon(
-                Icons.Default.Close, // ← Крестик когда expanded
+                Icons.Default.Close,
                 contentDescription = "Закрыть"
             )
         } else {
             Icon(
-                Icons.Default.Add, // ← Плюс когда collapsed
+                Icons.Default.Add,
                 contentDescription = "Добавить"
             )
         }
     }
 }
 
-
-
 @Composable
-fun SimpleNavigationBar(modifier: Modifier = Modifier) {
-    val navController = rememberNavController()
+fun TransformableNavigationBar(scale: Float, offset: Offset) {
     var selectedItem by rememberSaveable { mutableIntStateOf(0) }
     val items = listOf("Главная", "Статистика", "Профиль")
-    val routes = listOf("home", "stats", "profile")
     val icons = listOf(
         Icons.Default.Home,
         Icons.Default.Settings,
         Icons.Default.Person
     )
 
-    NavigationBar(modifier = Modifier
-        .offset(
-            x = with(LocalDensity.current) {
-                (LocalConfiguration.current.screenWidthDp * 0f).toDp()
-            },
-            y = with(LocalDensity.current) {
-                (LocalConfiguration.current.screenHeightDp * 2.5f).toDp()
-            }
-        )) {
+    NavigationBar(
+        modifier = Modifier
+            .offset(
+                x = with(LocalDensity.current) { offset.x.toDp() },
+                y = with(LocalDensity.current) { offset.y.toDp() }
+            )
+    ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index,
-                onClick = {
-                    navController.navigate(routes[index])
-                    selectedItem = index
-                },
+                onClick = { selectedItem = index },
                 icon = {
                     Icon(
                         imageVector = icons[index],
                         contentDescription = item
                     )
                 },
-                label = { Text(item) },
-                modifier = Modifier
-                    .offset(
-                        x = with(LocalDensity.current) {
-                            (LocalConfiguration.current.screenWidthDp * 0f).toDp()
-                        },
-                        y = with(LocalDensity.current) {
-                            (LocalConfiguration.current.screenHeightDp * 0f).toDp()
-                        }
-                    )
+                label = { Text(item) }
             )
         }
+    }
+}
+
+@Composable
+private fun calculateXOffset(offsetX: Float, scale: Float, multiplier: Float): androidx.compose.ui.unit.Dp {
+    val density = LocalDensity.current
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    return with(density) {
+        (offsetX + scale * (screenWidthDp * multiplier)).toDp()
+    }
+}
+
+@Composable
+private fun calculateYOffset(offsetY: Float, scale: Float, multiplier: Float): androidx.compose.ui.unit.Dp {
+    val density = LocalDensity.current
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    return with(density) {
+        (offsetY + scale * (screenHeightDp * multiplier)).toDp()
     }
 }
