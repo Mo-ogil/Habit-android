@@ -59,6 +59,13 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation(libs.androidx.benchmark.traceprocessor)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.foundation.layout)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.games.activity)
+    implementation(libs.androidx.compose.testing)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
