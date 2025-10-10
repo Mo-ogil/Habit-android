@@ -50,8 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
-@Preview(showSystemUi = true)
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun FirstFragment() {
     var scale by remember { mutableFloatStateOf(1.2f) }
@@ -96,10 +95,7 @@ fun FirstFragment() {
     }
 }
 
-@Composable
-fun FirstFragmentPreview() {
-    FirstFragment()
-}
+
 
 @Composable
 fun TransformableSegmentedButton(
@@ -285,4 +281,10 @@ fun TransformableNavigationBar(scale: Float, offset: Offset) {
     }
 }
 
+@Preview(showSystemUi = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FirstFragmentPreview() {
+    FirstFragment()
+}
 
