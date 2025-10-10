@@ -96,7 +96,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.Popup
 import androidx.constraintlayout.helper.widget.Grid
-import androidx.media3.common.util.Clock
 import androidx.navigation.fragment.findNavController
 import com.example.habit.databinding.FragmentSecondBinding
 import java.text.SimpleDateFormat
@@ -294,19 +293,18 @@ fun CheckboxParentExample() {
                     .drawBehind {
 // Верхняя линия
                         drawLine(
-                            color = Color.Black,
+                            color = Color.LightGray,
                             start = Offset(0f, 0f),
                             end = Offset(size.width, 0f),
-                            strokeWidth = 0.8f
+                            strokeWidth = 4f
                         )
 // Нижняя линия
                         drawLine(
-                            color = Color.Black,
+                            color = Color.LightGray,
                             start = Offset(0f, size.height),
                             end = Offset(size.width, size.height),
-                            strokeWidth = 0.5f
+                            strokeWidth = 4f
                         )
-
                     }
             ) {
                 Row(
@@ -344,10 +342,10 @@ fun CheckboxParentExample() {
                         .drawBehind {
 // Нижняя линия
                             drawLine(
-                                color = Color.Black,
+                                color = Color.LightGray,
                                 start = Offset(0f, size.height),
                                 end = Offset(size.width, size.height),
-                                strokeWidth = 0.5f
+                                strokeWidth = 4f
                             )
                         }
                 ) {
