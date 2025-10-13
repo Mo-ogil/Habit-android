@@ -35,7 +35,7 @@ fun AppNavigation() {
 
     NavHost(navController, startDestination = "fragment1") {
         composable("fragment1") {
-//            FirstFragment { navController.navigate("fragment2") }
+//            FirstFragment()
             SecondFragment()
         }
     }
