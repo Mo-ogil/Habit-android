@@ -50,8 +50,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
-@Preview(showSystemUi = true)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FirstFragment() {
     var scale by remember { mutableFloatStateOf(1.2f) }
@@ -67,11 +65,11 @@ fun FirstFragment() {
 
     Scaffold(
         floatingActionButton = {
-            TransformableFloatingActionButton(scale, offset)
+            TransformableFloatingActionButton()
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
-            TransformableNavigationBar(scale, offset)
+            TransformableNavigationBar()
         },
         modifier = Modifier
             .fillMaxSize()
@@ -84,34 +82,21 @@ fun FirstFragment() {
                 .padding(innerPadding)
                 .padding(top = 10.dp)
         ) {
-            TransformableSegmentedButton(scale, offset)
-            TransformableHorizontalLine(scale, offset)
-            TransformableInputChip(
-                text = "Моя новая привычка",
-                onDismiss = {},
-                scale = scale,
-                offset = offset,
-            )
+            TransformableSegmentedButton()
+            TransformableHorizontalLine()
+            TransformableInputChip(text = "Моя новая привычка")
         }
     }
 }
 
-@Composable
-fun FirstFragmentPreview() {
-    FirstFragment()
-}
 
 @Composable
-fun TransformableSegmentedButton(
-    scale: Float,
-    offset: Offset,
-    modifier: Modifier = Modifier
-) {
+fun TransformableSegmentedButton() {
     var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("Day", "Month", "Week")
 
     SingleChoiceSegmentedButtonRow(
-        modifier = modifier
+        modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 58.dp)
     ) {
         options.forEachIndexed { index, label ->
@@ -139,7 +124,7 @@ fun TransformableSegmentedButton(
 }
 
 @Composable
-fun TransformableHorizontalLine(scale: Float, offset: Offset) {
+fun TransformableHorizontalLine() {
     Column {
         Text(
             text = "Всего: 1",
@@ -161,16 +146,13 @@ fun TransformableHorizontalLine(scale: Float, offset: Offset) {
 }
 
 @Composable
-fun TransformableInputChip(
-    text: String,
-    onDismiss: () -> Unit,
-    scale: Float,
-    offset: Offset
-) {
+fun TransformableInputChip(text: String) {
     var enabled by remember { mutableStateOf(true) }
     if (!enabled) return
-    Column (modifier = Modifier
-        .padding(35.dp, 0.dp)){
+    Column(
+        modifier = Modifier
+            .padding(35.dp, 0.dp)
+    ) {
         InputChip(
             onClick = {},
             label = { Text(text, style = MaterialTheme.typography.bodyMedium) },
@@ -210,13 +192,15 @@ fun TransformableInputChip(
 }
 
 @Composable
-fun TransformableFloatingActionButton(scale: Float, offset: Offset) {
+fun TransformableFloatingActionButton() {
     var isExpanded by remember { mutableStateOf(false) }
-    Column (modifier = Modifier
-        .padding(start = 280.dp,
-            bottom = 8.dp
-        )
-    ){
+    Column(
+        modifier = Modifier
+            .padding(
+                start = 280.dp,
+                bottom = 8.dp
+            )
+    ) {
         LargeFloatingActionButton(
             onClick = {
                 isExpanded = !isExpanded
@@ -245,7 +229,7 @@ fun TransformableFloatingActionButton(scale: Float, offset: Offset) {
 }
 
 @Composable
-fun TransformableNavigationBar(scale: Float, offset: Offset) {
+fun TransformableNavigationBar() {
     var selectedItem by rememberSaveable { mutableIntStateOf(0) }
     val items = listOf("Главная", "Статистика", "Профиль")
     val icons = listOf(
@@ -256,8 +240,10 @@ fun TransformableNavigationBar(scale: Float, offset: Offset) {
 
     NavigationBar(
         modifier = Modifier
-            .padding(0.dp,
-                0.dp),
+            .padding(
+                0.dp,
+                0.dp
+            ),
         containerColor = Color(0xFFEEEEEE)
     ) {
         items.forEachIndexed { index, item ->
@@ -279,10 +265,17 @@ fun TransformableNavigationBar(scale: Float, offset: Offset) {
                     indicatorColor = Color(0xFFADD8E6),
 
                     unselectedIconColor = Color.Black,
-                    unselectedTextColor = Color.Black)
+                    unselectedTextColor = Color.Black
+                )
             )
         }
     }
 }
 
+@Preview(showSystemUi = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FirstFragmentPreview() {
+    FirstFragment()
+}
 
