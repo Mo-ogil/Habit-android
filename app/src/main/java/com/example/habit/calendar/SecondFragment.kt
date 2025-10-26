@@ -1,4 +1,4 @@
-package com.example.habit
+package com.example.habit.calendar
 
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable

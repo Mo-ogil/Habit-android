@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.habit.home.HomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +36,10 @@ fun AppNavigation() {
 
     NavHost(navController, startDestination = "fragment1") {
         composable("fragment1") {
-//            FirstFragment()
-            SecondFragment()
+            HomeScreen(
+                viewModel = TODO()
+            )
+//            SecondFragment()
         }
     }
 }

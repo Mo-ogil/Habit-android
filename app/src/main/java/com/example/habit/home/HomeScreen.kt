@@ -1,5 +1,6 @@
-package com.example.habit
+package com.example.habit.home
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -48,10 +49,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
-fun FirstFragment() {
+fun HomeScreen(viewModel: HomeViewModel) {
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     var scale by remember { mutableFloatStateOf(1.2f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
@@ -272,10 +278,11 @@ fun TransformableNavigationBar() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showSystemUi = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FirstFragmentPreview() {
-    FirstFragment()
+fun HomeScreenPreview() {
+    HomeScreen(HomeViewModel())
 }
 
